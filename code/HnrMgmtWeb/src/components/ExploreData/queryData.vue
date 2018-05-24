@@ -21,12 +21,12 @@
             </el-select>
           </el-form-item>
           <el-form-item label="学院" prop="orgID">
-            <el-select v-model="listenData.AwardeeOrgID" placeholder="请选择学院(可多选)" style="width:300px" multiple >
-              <el-option v-for="org in OrgData" :key="org.OrgID" :value="org.OrgID" :label="org.Name"></el-option>
+            <el-select v-model="listenData.AwdeeOrgName" placeholder="请选择学院(可多选)" style="width:300px" multiple >
+              <el-option v-for="org in OrgData" :key="org.OrgID" :value="org.Name" :label="org.Name"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="学生姓名">
-            <el-input v-model="listenData.AwardeeName" placeholder="请输入姓名" style="width:150px"></el-input>
+            <el-input v-model="listenData.AwdeeName" placeholder="请输入姓名" style="width:150px"></el-input>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="filterparam">查询</el-button>
@@ -36,15 +36,19 @@
       <!-- 表格区 -->
       <div class="main-data">
           <el-table  class="table" :data="awdData" style="width:100%" v-loading="listLoading" height="string" :default-sort = "{prop: 'GradeName', order: 'descending'}" > 
-        <el-table-column type="selection" width="55"></el-table-column>
-
-
-        </el-table>
-                  <el-table  class="table" :data="hnrData" style="width:100%" v-loading="listLoading" height="string" :default-sort = "{prop: 'GradeName', order: 'descending'}"  > 
-
-        <el-table-column type="selection" width="55"></el-table-column>
-
-        </el-table>
+            <el-table-column type="selection" width="55"></el-table-column>
+            <el-table-column prop="AwdeeName" label="获奖人姓名" width="180" />
+            <el-table-column prop="AwdName" label="获奖名称" width="180" />
+            <el-table-column prop="AwdOrgName" label="所属学院" width="180" />
+            <el-table-column prop="ApplyTime" label="申请时间" width="220" />
+          </el-table>
+          <el-table  class="table" :data="hnrData" style="width:100%" v-loading="listLoading" height="string" :default-sort = "{prop: 'GradeName', order: 'descending'}"  > 
+            <el-table-column type="selection" width="55"></el-table-column>
+            <el-table-column prop="AwdeeName" label="获奖人姓名" width="180" />
+            <el-table-column prop="HnrName" label="荣誉名称" width="180" />
+            <el-table-column prop="AwdeeOrgName" label="所属学院" width="180" />
+            <el-table-column prop="ApplyTime" label="申请时间" width="220" />
+          </el-table>
       </div>
     </div>
   </div>
@@ -52,22 +56,22 @@
 
 <script type="text/ecmascript-6">
 import { reqGetOrgList, queryDataInfo } from "../../api/api";
-import { annual} from '../../assets/data/basic'
+import { annual } from "../../assets/data/basic";
 export default {
   data() {
     return {
       //监听对象
       listenData: {
-        Time:'',
-        AwardeeOrgID: '',
-        AwardeeName: '',
-        OrgID:''
+        Time: "",
+        AwardeeOrgID: "",
+        AwdeeOrgName: "",
+        AwdeeName: "",
+        OrgID: ""
       },
       // 查询选项
       queryOption: {
         type: 0,
         conditions: []
-        
       },
       //查询填充项
       OrgData: [],
@@ -79,15 +83,15 @@ export default {
       hnrData: []
     };
   },
-  computed:{
-    orgfilling(){
-      return this.listenData.AwardeeOrgID
+  computed: {
+    orgfilling() {
+      return this.listenData.AwardeeOrgID;
     }
   },
   watch: {
     // 监听选项的变动
-    orgfilling(newval){
-      this.listenData.OrgID=newval
+    orgfilling(newval) {
+      this.listenData.OrgID = newval;
     }
   },
   mounted() {
@@ -120,7 +124,7 @@ export default {
             fieldValues: []
           };
           console.log(this.queryOption.conditions[paramNum].fieldName);
-          console.log(paramNum)
+          console.log(paramNum);
           //将数组或者变量压入
           if (typeof this.listenData[prop] === "object") {
             for (var value of this.listenData[prop]) {
@@ -145,12 +149,20 @@ export default {
       param.access_token = 11;
       queryDataInfo(param).then(res => {
         console.log(res.data);
-        this.awdData=res.data.data.awdList
-        this.hnrData=res.data.data.hnrList
+        if (res.data.status == "success") {
+          this.$message({
+            message: res.data.messages,
+            type: "success"
+          });
+          this.awdData = res.data.data.awdList;
+          this.hnrData = res.data.data.hnrList;
+        } else {
+          this.$message.error(res.data.messages);
+        }
         this.listLoading = false;
       });
     },
-        //更换每页数量
+    //更换每页数量
     SizeChangeEvent(val) {
       this.size = val;
       this.getList();
@@ -169,7 +181,7 @@ export default {
 <style scoped lang="scss">
 .toolbal {
   padding: 20px;
-  border: 2px solid #000;
+  border: 0px solid #000;
   .el-form-item {
     margin-bottom: 0px;
   }

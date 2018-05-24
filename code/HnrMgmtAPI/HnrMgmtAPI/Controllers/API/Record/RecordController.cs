@@ -583,11 +583,13 @@ namespace HnrMgmtAPI.Controllers.API.Record
             {
                 #region 参数验证
                 //可为空参数列表
-                List<string> nullPropertyList = new List<string>();
-                nullPropertyList.Add("page");
-                nullPropertyList.Add("limit");
-                nullPropertyList.Add("sortDirection");
-                nullPropertyList.Add("sortField");
+                List<string> nullPropertyList = new List<string>
+                {
+                    "page",
+                    "limit",
+                    "sortDirection",
+                    "sortField"
+                };
 
                 result = ParameterCheck.CheckIsNullParameters(model, nullPropertyList);
                 if (result != null)

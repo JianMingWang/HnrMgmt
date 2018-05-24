@@ -23,7 +23,7 @@
           <!--<el-button @click.native.prevent="handleReset2">重置</el-button>-->
          </el-form-item>
       </el-form>
-      <footer>© 2017 Terry,Wang. Some rights reserved.</footer>
+      <!-- <footer>© 2017 Terry,Wang. Some rights reserved.</footer> -->
   </div>
 </template>
 
@@ -54,6 +54,9 @@ import {posLogin} from '../api/api'
          },{
              value:'3',
              label:'学院账号'
+         },{
+             value:'4',
+             label:'学生'
          }]
 
      }

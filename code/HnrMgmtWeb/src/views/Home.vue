@@ -50,7 +50,7 @@
                 </svg>
             </div>
              <!-- 主菜单 -->
-            <el-menu  :collapse="isCollapse" :default-active="$route.path" router>
+            <el-menu :hidden="!IsAdmin"  :collapse="isCollapse" :default-active="$route.path" router>
                 <!-- 首页 -->
                 <el-menu-item index="/" > 
                     <i class="el-icon-menu "></i>
@@ -128,6 +128,52 @@
                         </el-menu-item>
                 </el-submenu>                
             </el-menu>
+            <el-menu :hidden="IsAdmin"  :collapse="isCollapse" :default-active="$route.path" router>
+                <!-- 首页 -->
+                <el-menu-item index="/" > 
+                    <i class="el-icon-menu "></i>
+                    <span slot="title">首页</span>
+                </el-menu-item>
+                <!-- 统计查询 -->
+                <el-submenu index="ExploreData">
+                        <template slot="title">
+                            <i class="el-icon-search"></i>
+                            <span slot="title">统计查询</span>
+                        </template>
+                        <el-menu-item index="/explore/analysis" >
+                            数据分析
+                        </el-menu-item>
+                        <el-menu-item index="/explore/query">
+                            数据查询
+                        </el-menu-item>
+                </el-submenu>                 
+                <!-- 记录管理 -->
+                <el-submenu index="recordData">
+                    <template slot="title">
+                        <i class="el-icon-plus"></i> 
+                        <span>记录管理</span>
+                    </template>
+                        <el-menu-item index="/record/honor">
+                            荣誉填报
+                        </el-menu-item>
+                        <el-menu-item index="/record/award">
+                            奖项填报
+                        </el-menu-item>
+                </el-submenu>
+                <!-- 个人信息 -->
+                <el-submenu index="accountData">
+                        <template slot="title">
+                            <i class="el-icon-star-off"></i>
+                            <span slot="title">个人管理</span>
+                        </template>
+                        <el-menu-item index="/account/info" >
+                            个人信息
+                        </el-menu-item>
+                        <el-menu-item index="/account/PassWord">
+                            修改密码
+                        </el-menu-item>
+                </el-submenu>                
+            </el-menu>
         </aside>
         <section class="main-container">
             <!-- 需要长时间存活的 -->          
@@ -146,121 +192,123 @@
 </template>
 
 <script type="text/ecmascript-6">
-import * as types from '../store/mutation-types'
- export default {
-   data() {
-     return {
-        isCollapse: false,
-        RoleName:this.$store.state.Name
-	 }
-
-   },
-   components: {
-
-   },
-   methods:{
-      //折叠     
-      collapse: function () {
-       this.isCollapse = !this.isCollapse;
-       },
-       // 登出
-       logout(){
-         this.$store.commit(types.LOGOUT)
-         this.$router.push({
-           path:'/login'
-         })
-       }
-       
-   }
- }
+import * as types from "../store/mutation-types";
+export default {
+  data() {
+    return {
+      isCollapse: false,
+      RoleName: this.$store.state.Name,
+      IsAdmin: true
+    };
+  },
+  components: {},
+  methods: {
+    //折叠
+    collapse: function() {
+      this.isCollapse = !this.isCollapse;
+    },
+    // 登出
+    logout() {
+      this.$store.commit(types.LOGOUT);
+      this.$router.push({
+        path: "/login"
+      });
+    }
+  },
+  mounted() {
+    console.log("Home");
+    console.log(this.$store.state.RoleID);
+    if (this.$store.state.RoleID == 3) {
+      this.IsAdmin = false;
+    }
+  }
+};
 </script>
 
 <style scoped lang="scss">
-  $background-color: #373d41;
-  .home-container{
+$background-color: #373d41;
+.home-container {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  flex-direction: column;
+  .top-bar {
+    $heigt: 50px;
+    height: $heigt;
+    line-height: 50px;
+    background-color: $background-color;
+    flex-grow: 0;
+    color: #fff;
+    > .logo {
+      float: left;
+      width: 59px;
+      height: $heigt;
       display: flex;
-      width: 100vw;
-      height: 100vh;
-      flex-direction: column;
-      .top-bar{
-          $heigt:50px;
-          height: $heigt;
-          line-height: 50px;
-          background-color: $background-color;
-          flex-grow: 0;
-          color: #fff;
-          >.logo{
-              float: left;
-              width: 59px;
-              height: $heigt;
-              display: flex;
-              background-image: url('../assets/logo.png');
-              background-size: 100% 100%;
-              >a{
-                  flex-grow: 1;
-              }
-          }
-          >.title{
-              float: left;
-              padding-left: 10px;
-              border-left: 1px solid #000;
-              >span{
-                  font-size: 20px;
-              }
-          }
-          >.account{
-              float: right;
-              padding-right: 15px;
-              .dropdown-main{
-                  color: #fff;
-                  cursor: pointer;
-                  padding-left: 12px;
-              }
-          }        
-      }
-    //   下方主内容
-    >.body-container{
-        overflow: hidden; // 必须使用
+      background-image: url("../assets/logo.png");
+      background-size: 100% 100%;
+      > a {
         flex-grow: 1;
-        display: flex;
-        >aside{
-            flex:none;
-            background-color: #333744;
-            &::-webkit-scrollbar {
-            display: none;
-            }
-            &.showSidebar{
-                overflow-x: hidden;
-                overflow-y: auto;
-            }
-           >.asid-button{
-               background: #4A5064;
-               text-align: center;
-               color: white;
-               height: 30px;
-               line-height: 30px;
-               cursor: pointer;
-               }
-           >.el-menu{
-                height: 100%; /*写给不支持calc()的浏览器*/
-                height: -moz-calc(100% - 80px);
-                height: -webkit-calc(100% - 80px);
-                height: calc(100% - 80px);
-                border-radius: 0px;
-                background-color: #333744;
-                width: 180px;           
-           }
-           >.el-menu--collapse {
-               width: 60px;
-               }          
-        }
-        >.main-container{
-            flex-grow: 1;
-            padding: 10px;
-            position: relative;
-        }
+      }
+    }
+    > .title {
+      float: left;
+      padding-left: 10px;
+      border-left: 1px solid #000;
+      > span {
+        font-size: 20px;
+      }
+    }
+    > .account {
+      float: right;
+      padding-right: 15px;
+      .dropdown-main {
+        color: #fff;
+        cursor: pointer;
+        padding-left: 12px;
+      }
     }
   }
-
- 
+  //   下方主内容
+  > .body-container {
+    overflow: hidden; // 必须使用
+    flex-grow: 1;
+    display: flex;
+    > aside {
+      flex: none;
+      background-color: #333744;
+      &::-webkit-scrollbar {
+        display: none;
+      }
+      &.showSidebar {
+        overflow-x: hidden;
+        overflow-y: auto;
+      }
+      > .asid-button {
+        background: #4a5064;
+        text-align: center;
+        color: white;
+        height: 30px;
+        line-height: 30px;
+        cursor: pointer;
+      }
+      > .el-menu {
+        height: 100%; /*写给不支持calc()的浏览器*/
+        height: -moz-calc(100% - 80px);
+        height: -webkit-calc(100% - 80px);
+        height: calc(100% - 80px);
+        border-radius: 0px;
+        background-color: #333744;
+        width: 180px;
+      }
+      > .el-menu--collapse {
+        width: 60px;
+      }
+    }
+    > .main-container {
+      flex-grow: 1;
+      padding: 10px;
+      position: relative;
+    }
+  }
+}
 </style>

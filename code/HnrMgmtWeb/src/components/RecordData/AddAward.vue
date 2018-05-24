@@ -5,8 +5,8 @@
       <el-breadcrumb separator="/">
           <el-breadcrumb-item :to="{ path: '/' }"><b>首页</b></el-breadcrumb-item>
           <el-breadcrumb-item>项目填报</el-breadcrumb-item>
-          <el-breadcrumb-item :to="{ path: '/record/award' }">奖项填报</el-breadcrumb-item>
-          <el-breadcrumb-item>新增奖项</el-breadcrumb-item>
+          <el-breadcrumb-item :to="{ path: '/record/award' }">荣誉填报</el-breadcrumb-item>
+          <el-breadcrumb-item>新增荣誉</el-breadcrumb-item>
       </el-breadcrumb>        
     </div>
     <!-- 下方主内容 --> 
