@@ -648,6 +648,126 @@ namespace HnrMgmtAPI.Controllers.API.Record
         }
         #endregion
 
+        #region 关键字检索功能
+        /// <summary>
+        /// 关键字检索查询
+        /// </summary>
+        /// <param name="access_token"></param>
+        /// <param name="keyWord"></param>
+        /// <returns></returns>
+        [HttpGet, Route("select")]
+        public ApiResult Select(string access_token, string keyWord)
+        {
+            string _keyWord = keyWord.Trim();
+            result = AccessToken.Check(access_token, "api/record/select");
+            if (result == null)
+            {
+                #region 逻辑操作
+                RecordList data = new RecordList
+                {
+                    hnrList = new List<returnHnrRecord>(),
+                    awdList = new List<returnAwdRecord>()
+                };
+                UserInfo userInfo = AccessToken.GetUserInfo(access_token);
+                if (userInfo == null)
+                {
+                    return SystemError();
+                }
+
+
+                IQueryable<vw_HnrRecord> hnrList = db.vw_HnrRecord.Where(q => q.State.Trim() == "0" || q.State.Trim() == "1" || q.State.Trim() == "2" || q.State.Trim() == "3").OrderByDescending(q => q.ApplyTime);
+                IQueryable<vw_AwdRecord> awdList = db.vw_AwdRecord.Where(q => q.State.Trim() == "0" || q.State.Trim() == "1" || q.State.Trim() == "2" || q.State.Trim() == "3").OrderByDescending(q => q.ApplyTime);
+
+                if (userInfo.userRoleID == "3")
+                {
+                    hnrList = hnrList.Where(q => q.AwardeeOrgID.Trim() == userInfo.userOrgID);
+                    awdList = awdList.Where(q => q.AwardeeOrgID.Trim() == userInfo.userOrgID || q.AwdOrgID.Trim() == userInfo.userOrgID);
+                }
+                if (userInfo.userRoleID == "4")
+                {
+                    hnrList = hnrList.Where(q => q.AwardeeID.Trim() == userInfo.userID);
+                    awdList = awdList.Where(q => q.AwardeeID.Trim() == userInfo.userID);
+                }
+
+                #region 检索数据
+                hnrList = hnrList.Where(q => q.AwardeeName.Contains(_keyWord) || q.AwardeeOrgName.Contains(_keyWord) || q.AwardeeBranch.Contains(_keyWord) || q.HnrName.Contains(_keyWord) || q.HnrAnnual.Contains(_keyWord) || q.HnrTime.Contains(_keyWord));
+                awdList = awdList.Where(q => q.AwardeeName.Contains(_keyWord) || q.AwardeeOrgName.Contains(_keyWord) || q.AwdOrgName.Contains(_keyWord) || q.AwardeeBranch.Contains(_keyWord) || q.AwdName.Contains(_keyWord) || q.AwdProName.Contains(_keyWord) || q.AwdYear.Contains(_keyWord));
+                List<vw_HnrRecord> _hnrList = hnrList.ToList();
+                List<vw_AwdRecord> _awdList = awdList.ToList();
+
+                data.hnrListNum = _hnrList.Count();
+                data.awdListNum = _awdList.Count();
+
+                foreach (vw_HnrRecord item in _hnrList)
+                {
+                    returnHnrRecord model = new returnHnrRecord
+                    {
+                        HnrRecordID = item.HnrRecID,
+                        AwdeeID = item.AwardeeID,
+                        AwdeeName = item.AwardeeName,
+                        AwdeeOrgID = item.AwardeeOrgID,
+                        AwdeeOrgName = item.AwardeeOrgName,
+                        AwdeeBranch = item.AwardeeBranch,
+                        HnrName = item.HnrName,
+                        GradeName = item.HnrGradeName,
+                        HnrAnnual = item.HnrAnnual,
+                        HnrTime = item.HnrTime,
+                        ApplyAccountName = item.ApplyAccountName,
+                        ApplyAccountOrg = item.ApplyAccountOrgName,
+                        ApplyAccountRole = item.ApplyAccountRoleName,
+                        ApplyTime = item.ApplyTime,
+                        RejectReason = item.Reason,
+                        FileUrl = item.FileUrl,
+                        State = item.State
+                    };
+
+                    data.hnrList.Add(model);
+                }
+
+                foreach (vw_AwdRecord item in _awdList)
+                {
+                    returnAwdRecord model = new returnAwdRecord
+                    {
+                        AwdRecordID = item.AwdRecID,
+                        AwdeeName = item.AwardeeName,
+                        AwdeeOrgID = item.AwardeeOrgID,
+                        AwdeeOrgName = item.AwardeeOrgName,
+                        AwdeeBranch = item.AwardeeBranch,
+                        AwdID = "",
+                        AwdName = item.AwdName,
+                        AwdOrgID = item.AwdOrgID,
+                        AwdOrgName = item.AwdOrgName,
+                        AwdProName = item.AwdProName,
+                        Grade = item.AwdGrade,
+                        GradeName = item.AwdGradeName,
+                        AwdYear = item.AwdYear,
+                        AwdTerm = item.AwdTerm,
+                        AwdTime = item.AwdTime,
+                        IsTeam = item.IsTeam,
+                        Teacher = item.Teacher,
+                        TeamMembersName = "",
+                        TeamMembersOrgName = "",
+                        ApplyAccountName = "",
+                        ApplyAccountOrg = "",
+                        ApplyAccountRole = "",
+                        ApplyTime = item.ApplyTime,
+                        RejectReason = item.Reason,
+                        FileUrl = item.FileUrl,
+                        State = item.State
+                    };
+
+                    data.awdList.Add(model);
+                }
+
+                #endregion
+
+                return Success("检索成功", data);
+                #endregion
+            }
+            return result;
+        }
+        #endregion
+
         #region 编辑功能
         /// <summary>
         /// 荣誉记录修改
@@ -2225,65 +2345,71 @@ namespace HnrMgmtAPI.Controllers.API.Record
             var _awdRecordList = GetList(awdRecordList, conditionModel.page, conditionModel.limit, conditionModel.sortDirection, conditionModel.sortField);
 
             #region 数据处理
-            RecordList data = new RecordList();
-            data.hnrListNum = _hnrRecordList.Count();
-            data.awdListNum = _awdRecordList.Count();
-            data.hnrList = new List<returnHnrRecord>();
-            data.awdList = new List<returnAwdRecord>();
+            RecordList data = new RecordList
+            {
+                hnrListNum = _hnrRecordList.Count(),
+                awdListNum = _awdRecordList.Count(),
+                hnrList = new List<returnHnrRecord>(),
+                awdList = new List<returnAwdRecord>()
+            };
 
             foreach (vw_HnrRecord item in hnrRecordList)
             {
-                returnHnrRecord model = new returnHnrRecord();
-                model.HnrRecordID = item.HnrRecID;
-                model.AwdeeID = item.AwardeeID;
-                model.AwdeeName = item.AwardeeName;
-                model.AwdeeOrgID = item.AwardeeOrgID;
-                model.AwdeeOrgName = item.AwardeeOrgName;
-                model.AwdeeBranch = item.AwardeeBranch;
-                model.HnrName = item.HnrName;
-                model.GradeName = item.HnrGradeName;
-                model.HnrAnnual = item.HnrAnnual;
-                model.HnrTime = item.HnrTime;
-                model.ApplyAccountName = item.ApplyAccountName;
-                model.ApplyAccountOrg = item.ApplyAccountOrgName;
-                model.ApplyAccountRole = item.ApplyAccountRoleName;
-                model.ApplyTime = item.ApplyTime;
-                model.RejectReason = item.Reason;
-                model.FileUrl = item.FileUrl;
-                model.State = item.State;
+                returnHnrRecord model = new returnHnrRecord
+                {
+                    HnrRecordID = item.HnrRecID,
+                    AwdeeID = item.AwardeeID,
+                    AwdeeName = item.AwardeeName,
+                    AwdeeOrgID = item.AwardeeOrgID,
+                    AwdeeOrgName = item.AwardeeOrgName,
+                    AwdeeBranch = item.AwardeeBranch,
+                    HnrName = item.HnrName,
+                    GradeName = item.HnrGradeName,
+                    HnrAnnual = item.HnrAnnual,
+                    HnrTime = item.HnrTime,
+                    ApplyAccountName = item.ApplyAccountName,
+                    ApplyAccountOrg = item.ApplyAccountOrgName,
+                    ApplyAccountRole = item.ApplyAccountRoleName,
+                    ApplyTime = item.ApplyTime,
+                    RejectReason = item.Reason,
+                    FileUrl = item.FileUrl,
+                    State = item.State
+                };
 
                 data.hnrList.Add(model);
             }
 
             foreach (vw_AwdRecord_Rec item in awdRecordList)
             {
-                returnAwdRecord model = new returnAwdRecord();
-                model.AwdRecordID = item.AwdRecID;
-                model.AwdeeName = item.TeamAwdeeName;
-                model.AwdeeOrgID = item.TeamAwdeeOrgID;
-                model.AwdeeOrgName = item.TeamAwdeeOrgName;
-                model.AwdeeBranch = item.TeamAwdeeBranch;
-                model.AwdID = item.AwdID;
-                model.AwdName = item.AwdName;
-                model.AwdOrgID = item.OrgID;
-                model.AwdOrgName = item.OrgName;
-                model.AwdProName = item.ProName;
-                model.Grade = item.AwdGrade;
-                model.GradeName = item.AwdGradeName;
-                model.AwdYear = item.Year;
-                model.AwdTerm = item.Term;
-                model.AwdTime = item.Time;
-                model.IsTeam = item.IsTeam;
-                model.Teacher = item.Teacher;
-                model.TeamMembersName = item.TeamMembers;
-                model.TeamMembersOrgName = item.TeamMembersOrgName;
-                model.ApplyAccountName = item.ApplyAccountName;
-                model.ApplyAccountOrg = item.ApplyAccountOrgName;
-                model.ApplyAccountRole = item.ApplyAccountRoleName;
-                model.ApplyTime = item.ApplyTime;
-                model.RejectReason = item.Reason;
-                model.FileUrl = item.FileUrl;
-                model.State = item.State;
+                returnAwdRecord model = new returnAwdRecord
+                {
+                    AwdRecordID = item.AwdRecID,
+                    AwdeeName = item.TeamAwdeeName,
+                    AwdeeOrgID = item.TeamAwdeeOrgID,
+                    AwdeeOrgName = item.TeamAwdeeOrgName,
+                    AwdeeBranch = item.TeamAwdeeBranch,
+                    AwdID = item.AwdID,
+                    AwdName = item.AwdName,
+                    AwdOrgID = item.OrgID,
+                    AwdOrgName = item.OrgName,
+                    AwdProName = item.ProName,
+                    Grade = item.AwdGrade,
+                    GradeName = item.AwdGradeName,
+                    AwdYear = item.Year,
+                    AwdTerm = item.Term,
+                    AwdTime = item.Time,
+                    IsTeam = item.IsTeam,
+                    Teacher = item.Teacher,
+                    TeamMembersName = item.TeamMembers,
+                    TeamMembersOrgName = item.TeamMembersOrgName,
+                    ApplyAccountName = item.ApplyAccountName,
+                    ApplyAccountOrg = item.ApplyAccountOrgName,
+                    ApplyAccountRole = item.ApplyAccountRoleName,
+                    ApplyTime = item.ApplyTime,
+                    RejectReason = item.Reason,
+                    FileUrl = item.FileUrl,
+                    State = item.State
+                };
 
                 data.awdList.Add(model);
             }

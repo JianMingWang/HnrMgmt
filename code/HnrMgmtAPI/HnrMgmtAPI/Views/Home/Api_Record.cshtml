@@ -131,6 +131,11 @@
                 console.log(data);
                 AjaxRequestPost('api/record/multiconditionquery', data);
             });
+
+            //btnRecordSelect
+            $('#btnRecordSelect').click(function (e) {
+                AjaxRequestGet('api/record/select?access_token=11&keyWord=2017');
+            });
         });
 
     </script>
@@ -208,6 +213,11 @@
             <hr />
             <h4>多条件查询接口</h4>
             <input type="button" value="api/record/multiconditionquery" id="btnMulticonditionquery" />
+            <br />
+            <br />
+
+            <h4>关键字查询</h4>
+            <input type="button" value="api/record/select" id="btnRecordSelect" />
             <br />
             <br />
         </div>

@@ -16,7 +16,7 @@
           <el-button v-if="!isModify" type="primary" @click="isModify = true">编辑信息</el-button>
           <el-button v-if="isModify" type="primary" @click="isModify = false">取消编辑</el-button>          
         </el-form>               -->
-        <div :hidden="!IsSearch">
+        <div class="topSearch" :hidden="!IsSearch">
           <div class="picTop"></div>
           <el-input placeholder="请输入搜索内容" v-model="searchValue" class="input-with-select-top">
               <el-button slot="append" icon="el-icon-search" @click="search()"></el-button>
@@ -34,19 +34,87 @@
             </el-input>
           </div> 
         </div>
-        <el-table class="table" :data="awdData" style="width:100%" v-loading="listLoading" height="string" :hidden="!IsSearch"> 
-            <el-table-column type="selection" width="55"></el-table-column>
-            <el-table-column prop="AwdeeName" label="获奖人姓名" width="180" />
-            <el-table-column prop="AwdName" label="获奖名称" width="180" />
-            <el-table-column prop="AwdOrgName" label="所属学院" width="180" />
-            <el-table-column prop="ApplyTime" label="申请时间" width="220" />
+          <el-table  class="table" :data="awdData" style="width:100%" v-loading="listLoading" height="string" :hidden="!IsSearch"> 
+            <el-table-column prop="AwdeeName" label="获奖人姓名" width="120">
+              <template scope="scope">
+                <span v-if="cellClassName(scope.row.AwdeeName)">{{scope.row.AwdeeName}}</span>
+                <span v-else :style="keyWordStyle">{{scope.row.AwdeeName}}</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="AwdName" label="获奖名称" width="180">
+              <template scope="scope">
+                <span v-if="cellClassName(scope.row.AwdName)">{{scope.row.AwdName}}</span>
+                <span v-else :style="keyWordStyle">{{scope.row.AwdName}}</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="AwdeeOrgName" label="获奖人所属学院" width="180">
+              <template scope="scope">
+                <span v-if="cellClassName(scope.row.AwdeeOrgName)">{{scope.row.AwdeeOrgName}}</span>
+                <span v-else :style="keyWordStyle">{{scope.row.AwdeeOrgName}}</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="AwdeeBranch" label="团支部" width="180">
+              <template scope="scope">
+                <span v-if="cellClassName(scope.row.AwdeeBranch)">{{scope.row.AwdeeBranch}}</span>
+                <span v-else :style="keyWordStyle">{{scope.row.AwdeeBranch}}</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="AwdOrgName" label="获奖学院" width="180">
+              <template scope="scope">
+                <span v-if="cellClassName(scope.row.AwdOrgName)">{{scope.row.AwdOrgName}}</span>
+                <span v-else :style="keyWordStyle">{{scope.row.AwdOrgName}}</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="AwdProName" label="项目名称" width="180">
+              <template scope="scope">
+                <span v-if="cellClassName(scope.row.AwdProName)">{{scope.row.AwdProName}}</span>
+                <span v-else :style="keyWordStyle">{{scope.row.AwdProName}}</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="AwdYear" label="获奖年份" width="180">
+              <template scope="scope">
+                <span v-if="cellClassName(scope.row.AwdYear)">{{scope.row.AwdYear}}</span>
+                <span v-else :style="keyWordStyle">{{scope.row.AwdYear}}</span>
+              </template>
+            </el-table-column>
           </el-table>
-        <el-table class="table" :data="hnrData" style="width:100%" v-loading="listLoading" height="string" :hidden="!IsSearch"> 
-            <el-table-column type="selection" width="55"></el-table-column>
-            <el-table-column prop="AwdeeName" label="获奖人姓名" width="180" />
-            <el-table-column prop="HnrName" label="荣誉名称" width="180" />
-            <el-table-column prop="AwdeeOrgName" label="所属学院" width="180" />
-            <el-table-column prop="ApplyTime" label="申请时间" width="220" />
+          <el-table  class="table" :data="hnrData" style="width:100%" v-loading="listLoading" height="string" :hidden="!IsSearch">
+            <el-table-column prop="AwdeeName" label="获奖人姓名" width="120">
+              <template scope="scope">
+                <span v-if="cellClassName(scope.row.AwdeeName)">{{scope.row.AwdeeName}}</span>
+                <span v-else :style="keyWordStyle">{{scope.row.AwdeeName}}</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="HnrName" label="荣誉名称" width="180">
+              <template scope="scope">
+                <span v-if="cellClassName(scope.row.HnrName)">{{scope.row.HnrName}}</span>
+                <span v-else :style="keyWordStyle">{{scope.row.HnrName}}</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="AwdeeOrgName" label="获奖人所属学院" width="180">
+              <template scope="scope">
+                <span v-if="cellClassName(scope.row.AwdeeOrgName)">{{scope.row.AwdeeOrgName}}</span>
+                <span v-else :style="keyWordStyle">{{scope.row.AwdeeOrgName}}</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="AwdeeBranch" label="团支部" width="180">
+              <template scope="scope">
+                <span v-if="cellClassName(scope.row.AwdeeBranch)">{{scope.row.AwdeeBranch}}</span>
+                <span v-else :style="keyWordStyle">{{scope.row.AwdeeBranch}}</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="HnrAnnual" label="获奖年度" width="180">
+              <template scope="scope">
+                <span v-if="cellClassName(scope.row.HnrAnnual)">{{scope.row.HnrAnnual}}</span>
+                <span v-else :style="keyWordStyle">{{scope.row.HnrAnnual}}</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="HnrTime" label="获奖时间" width="180">
+              <template scope="scope">
+                <span v-if="cellClassName(scope.row.HnrTime)">{{scope.row.HnrTime}}</span>
+                <span v-else :style="keyWordStyle">{{scope.row.HnrTime}}</span>
+              </template>
+            </el-table-column>
         </el-table>
       </div>
     </div>
@@ -55,7 +123,11 @@
 
 <script type="text/ecmascript-6">
 import PubMethod from "../common/util";
-import { reqGetAccountInfo, posModifyAccountInfo } from "../api/api";
+import {
+  reqGetAccountInfo,
+  posModifyAccountInfo,
+  selectByKeyWord
+} from "../api/api";
 export default {
   data() {
     return {
@@ -66,17 +138,50 @@ export default {
       accountData: [],
       select: "",
       searchValue: "",
+      keyWord: "",
       IsSearch: false,
+      awdData: [],
+      hnrData: [],
+
+      keyWordStyle: 'color: #F4BA26; font-weight: bold;',
     };
   },
   created() {},
   methods: {
     search() {
-      if(this.searchValue != ""){
+      if (this.searchValue != "") {
+        this.keyWord = this.searchValue;
         this.IsSearch = true;
-      }else{
+        let Get_SelectByKeyWord_param = {
+          access_token: this.$store.state.access_token,
+          keyWord: this.searchValue
+        };
+        selectByKeyWord(Get_SelectByKeyWord_param)
+          .then(res => {
+            console.log(res);
+            if (res.data.status == "success") {
+              this.awdData = res.data.data.awdList;
+              this.hnrData = res.data.data.hnrList;
+              this.$message({
+                message: res.data.messages,
+                type: "success"
+              });
+            } else {
+              this.$message.error(res.data.messages);
+            }
+          })
+          .catch(res => {});
+      } else {
         this.IsSearch = false;
-        this.$message('搜索内容不能为空');
+        this.$message("搜索内容不能为空");
+      }
+    },
+    cellClassName(param) {
+      console.log(param);
+      if (param.indexOf(this.keyWord) == -1) {
+        return true;
+      } else {
+        return false;
       }
     }
   }
@@ -129,12 +234,12 @@ export default {
   }
 }
 
-.input-with-select{
+.input-with-select {
   border: 0px;
   background-color: #fff;
 }
 
-.input-with-select-top{
+.input-with-select-top {
   border: 0px;
   background-color: #fff;
   width: 500px;
@@ -173,5 +278,8 @@ export default {
   position: absolute;
   top: 30%;
   transform: translateY(-50%);
+}
+.topSearch {
+  margin-bottom: 80px;
 }
 </style>

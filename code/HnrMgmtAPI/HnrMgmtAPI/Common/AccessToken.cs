@@ -152,7 +152,7 @@ namespace HnrMgmtAPI.Common
             }
             #endregion
         }
-
+        
         /// <summary>
         /// 注销AccessToken
         /// </summary>

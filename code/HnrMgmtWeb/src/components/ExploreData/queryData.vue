@@ -36,8 +36,15 @@
       <!-- 表格区 -->
       <div class="main-data">
           <el-table  class="table" :data="awdData" style="width:100%" v-loading="listLoading" height="string" :default-sort = "{prop: 'GradeName', order: 'descending'}" > 
-            <el-table-column type="selection" width="55"></el-table-column>
-            <el-table-column prop="AwdeeName" label="获奖人姓名" width="180" />
+            <el-table-column type="selection" width="55">
+              
+            </el-table-column>
+            <el-table-column prop="AwdeeName" label="获奖人姓名" width="180">
+              <template scope="scope">
+                        <span v-if="cellClassName(scope.row.AwdeeName)">{{scope.row.AwdeeName}}</span>
+                        <span v-else style="color: red">{{scope.row.AwdeeName}}</span>
+              </template>
+            </el-table-column>
             <el-table-column prop="AwdName" label="获奖名称" width="180" />
             <el-table-column prop="AwdOrgName" label="所属学院" width="180" />
             <el-table-column prop="ApplyTime" label="申请时间" width="220" />
@@ -173,6 +180,15 @@ export default {
       this.page = val;
       this.getList();
       PubMethod.logMessage(this.page + "   " + this.size);
+    },
+
+    cellClassName(row) {
+      console.log(row);
+      if(row == "王健铭"){
+        return true;
+      }else {
+        return false;
+      }
     }
   }
 };
@@ -197,4 +213,12 @@ export default {
   display: flex;
   flex-flow: row nowrap;
 }
+
+.el-table .warning-row {
+    background: oldlace;
+  }
+
+  .el-table .success-row {
+    background: #f0f9eb;
+  }
 </style>

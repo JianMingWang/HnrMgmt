@@ -1,5 +1,4 @@
 ﻿using HnrMgmtAPI.Models;
-using HnrMgmtAPI.Common;
 using HnrMgmtAPI.Models.API;
 using System;
 using System.Collections.Generic;
