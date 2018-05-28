@@ -40,10 +40,7 @@
               
             </el-table-column>
             <el-table-column prop="AwdeeName" label="获奖人姓名" width="180">
-              <template scope="scope">
-                        <span v-if="cellClassName(scope.row.AwdeeName)">{{scope.row.AwdeeName}}</span>
-                        <span v-else style="color: red">{{scope.row.AwdeeName}}</span>
-              </template>
+              
             </el-table-column>
             <el-table-column prop="AwdName" label="获奖名称" width="180" />
             <el-table-column prop="AwdOrgName" label="所属学院" width="180" />
@@ -182,14 +179,7 @@ export default {
       PubMethod.logMessage(this.page + "   " + this.size);
     },
 
-    cellClassName(row) {
-      console.log(row);
-      if(row == "王健铭"){
-        return true;
-      }else {
-        return false;
-      }
-    }
+    
   }
 };
 </script>
